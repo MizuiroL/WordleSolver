@@ -34,14 +34,13 @@ public class WordleSolver {
         if (word.length() != 5) {
             return false;
         } else if (enhanced) {
-            System.out.println("I'm checking this word: " + word);
-            return dictionary.contains(word);
+            return word.matches("^[a-z][a-z][a-z][a-z][a-z]$") && dictionary.contains(word);
         }
         return word.matches("^[a-z][a-z][a-z][a-z][a-z]$");
     }
 
     public boolean checkCodeValidity(String code) {
-        int n;
+        /*int n;
         if (code.length() != 5) {
             return false;
         } else {
@@ -52,7 +51,8 @@ public class WordleSolver {
                 }
             }
         }
-        return true;
+        return true;*/
+        return code.matches("^[0-2][0-2][0-2][0-2][0-2]$");
     }
 
     public int[] codify(String code) {
@@ -109,21 +109,13 @@ public class WordleSolver {
         String gameOutput;
         int[] wordCode = new int[]{0, 0, 0, 0, 0};
         do {
-            System.out.println("Checking various word validity: ");
-            System.out.println(solver.checkWordValidity("sport", false));
-            System.out.println(solver.checkWordValidity("sport", true));
-            System.out.println(solver.dictionary.stream().count());
             word = scan.nextLine();
             gameOutput = scan.nextLine();
             if (solver.checkWordValidity(word, false) && solver.checkCodeValidity(gameOutput)) {    // If the word is valid
                 System.out.println("Let me check");
                 wordCode = solver.codify(gameOutput);
-                System.out.println(wordCode.toString());
                 solver.applyRules(word, wordCode);
                 System.out.println("applyRules function done, I'll be printing the updated dictionary that contains: " + solver.dictionary.stream().count());
-                for(String w : solver.dictionary) {
-                    System.out.println(w);
-                }
             } else {
                 System.out.println("Please input a valid word");
             }
