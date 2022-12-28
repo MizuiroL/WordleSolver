@@ -10,6 +10,10 @@ import java.util.Scanner;
 public class WordleSolver {
     private List<String> dictionary;
 
+    public WordleSolver() {
+        this.dictionary = this.loadDictionary("C:\\Users\\mizui\\IdeaProjects\\WordleSolver\\src\\main\\resources\\wordle-La.txt");
+    }
+
     public List<String> loadDictionary(String file) {
         List<String> dictionary = new ArrayList<>();
         Charset charset = Charset.forName("UTF-8");
@@ -18,6 +22,7 @@ public class WordleSolver {
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
                 dictionary.add(line);
+                System.out.println(dictionary.stream().count());
             }
         } catch (IOException x) {
             System.err.format("IOException: %s%n", x);
@@ -29,6 +34,7 @@ public class WordleSolver {
         if (word.length() != 5) {
             return false;
         } else if (enhanced) {
+            System.out.println("I'm checking this word: " + word);
             return dictionary.contains(word);
         }
         return word.matches("^[a-z][a-z][a-z][a-z][a-z]$");
@@ -95,14 +101,18 @@ public class WordleSolver {
 
     public static void main(String[] args) {
         System.out.println("Hello world!");
+
         WordleSolver solver = new WordleSolver();
-        solver.dictionary = solver.loadDictionary("C:\\Users\\mizui\\IdeaProjects\\WordleSolver\\src\\wordle-La.txt");
 
         Scanner scan = new Scanner(System.in);
         String word;
         String gameOutput;
         int[] wordCode = new int[]{0, 0, 0, 0, 0};
         do {
+            System.out.println("Checking various word validity: ");
+            System.out.println(solver.checkWordValidity("sport", false));
+            System.out.println(solver.checkWordValidity("sport", true));
+            System.out.println(solver.dictionary.stream().count());
             word = scan.nextLine();
             gameOutput = scan.nextLine();
             if (solver.checkWordValidity(word, false) && solver.checkCodeValidity(gameOutput)) {    // If the word is valid
@@ -110,7 +120,7 @@ public class WordleSolver {
                 wordCode = solver.codify(gameOutput);
                 System.out.println(wordCode.toString());
                 solver.applyRules(word, wordCode);
-                System.out.println("applyRules function done, I'll be printing the updated dictionary");
+                System.out.println("applyRules function done, I'll be printing the updated dictionary that contains: " + solver.dictionary.stream().count());
                 for(String w : solver.dictionary) {
                     System.out.println(w);
                 }
