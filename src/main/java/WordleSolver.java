@@ -66,25 +66,26 @@ public class WordleSolver {
 
     public boolean applyRules(String word, int[] code) {
         int previousDictionarySize = this.dictionary.size();
-        String f = "^";
+        String f = "^*$";
         System.out.println("Starting now: " + f);
         for (int i = 0; i < 5; i++) {
-            f = "^".concat(nPoints(i));
             char character = word.charAt(i);
             switch (code[i]) {
                 case 0:
-                    f = f.concat("[^").concat(String.valueOf(character).concat("]"));
+                    f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
+                    this.dictionary = applyFilter(this.dictionary, f);
                     break;
                 case 1:
-                    f = f.concat("[^").concat(String.valueOf(character).concat("]"));
+                    f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
+                    this.dictionary = applyFilter(this.dictionary, f);
+                    f = String.format(".*[%c].*$", character);
+                    this.dictionary = applyFilter(this.dictionary, f);
                     break;
                 case 2:
-                    f = String.format("^[%c]$", character);
-                    //f = f.concat("[").concat(String.valueOf(character).concat("]"));
+                    f = String.format("^%s[%c]%s$", nPoints(i), character, nPoints(4 - i));
+                    this.dictionary = applyFilter(this.dictionary, f);
                     break;
             }
-            f = f.concat(nPoints(4-i)).concat("$");
-            this.dictionary = applyFilter(this.dictionary, f);
         }
         return this.dictionary.size() < previousDictionarySize;
     }
