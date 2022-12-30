@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class WordleSolver {
     private List<String> dictionary;
@@ -64,7 +65,7 @@ public class WordleSolver {
     }
 
     public boolean applyRules(String word, int[] code) {
-        List<String> d = this.dictionary;
+        int previousDictionarySize = this.dictionary.size();
         String f = "^";
         System.out.println("Starting now: " + f);
         for (int i = 0; i < 5; i++) {
@@ -72,19 +73,20 @@ public class WordleSolver {
             char character = word.charAt(i);
             switch (code[i]) {
                 case 0:
-                    f = f.concat("[").concat(String.valueOf(character).concat("]"));
+                    f = f.concat("[^").concat(String.valueOf(character).concat("]"));
                     break;
                 case 1:
-                    f = f.concat("[").concat(String.valueOf(character).concat("]"));
+                    f = f.concat("[^").concat(String.valueOf(character).concat("]"));
                     break;
                 case 2:
-                    f = f.concat("[^").concat(String.valueOf(character).concat("]"));
+                    f = String.format("^[%c]$", character);
+                    //f = f.concat("[").concat(String.valueOf(character).concat("]"));
                     break;
             }
             f = f.concat(nPoints(4-i)).concat("$");
-            applyFilter(d, f);
+            this.dictionary = applyFilter(this.dictionary, f);
         }
-        return this.dictionary.stream().count() == 1;
+        return this.dictionary.size() < previousDictionarySize;
     }
 
     public String nPoints(int n) {
@@ -95,8 +97,9 @@ public class WordleSolver {
         return s;
     }
 
-    public void applyFilter(List<String> list, String filter) {
-        list.stream().filter(w -> w.matches(filter));
+    public List<String> applyFilter(List<String> list, String filter) {
+        System.out.println("Regex for the filter: " + filter);
+        return list.stream().filter(w -> w.matches(filter)).collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
@@ -116,6 +119,9 @@ public class WordleSolver {
                 wordCode = solver.codify(gameOutput);
                 solver.applyRules(word, wordCode);
                 System.out.println("applyRules function done, I'll be printing the updated dictionary that contains: " + solver.dictionary.stream().count());
+                for (String w : solver.dictionary) {
+                    System.out.println(w);
+                }
             } else {
                 System.out.println("Please input a valid word");
             }
