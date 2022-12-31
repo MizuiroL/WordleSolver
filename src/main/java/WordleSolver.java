@@ -111,9 +111,9 @@ public class WordleSolver {
     public String filterThisManyLetters(char character, int n) {
         String repeat = "";
         for (int i = 0; i < n; i++) {
-            repeat.concat(String.format("[^%c]*[%c]", character, character));
+            repeat = repeat.concat(String.format("[^%c]*[%c]", character, character));
         }
-        return String.format("^%s[^c]*$", repeat);
+        return String.format("^%s[^%c]*$", repeat, character);
     }
 
     public String nPoints(int n) {
