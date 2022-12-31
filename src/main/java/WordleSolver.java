@@ -74,11 +74,19 @@ public class WordleSolver {
                 case 0:
                     f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
                     this.dictionary = applyFilter(this.dictionary, f);
+                    int numberOfLetters = howManyLetters(word, character, code);
+                    if (numberOfLetters == 0) {
+                        f = String.format("^[^%c][^%c][^%c][^%c][^%c]$", character, character, character, character, character);
+                        this.dictionary = applyFilter(this.dictionary, f);
+                    } else {
+                        f = filterThisManyLetters(character, numberOfLetters);
+                        this.dictionary = applyFilter(this.dictionary, f);
+                    }
                     break;
                 case 1:
                     f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
                     this.dictionary = applyFilter(this.dictionary, f);
-                    f = String.format(".*[%c].*$", character);
+                    f = String.format("^.*[%c].*$", character);
                     this.dictionary = applyFilter(this.dictionary, f);
                     break;
                 case 2:
@@ -88,6 +96,24 @@ public class WordleSolver {
             }
         }
         return this.dictionary.size() < previousDictionarySize;
+    }
+
+    public int howManyLetters(String word, char character, int[] code) {
+        int count = 0;
+        for (int i = 0; i < 5; i++) {
+            if (word.charAt(i) == character && code[i] > 0) {
+                count += 1;
+            }
+        }
+        return count;
+    }
+
+    public String filterThisManyLetters(char character, int n) {
+        String repeat = "";
+        for (int i = 0; i < n; i++) {
+            repeat.concat(String.format("[^%c]*[%c]", character, character));
+        }
+        return String.format("^%s[^c]*$", repeat);
     }
 
     public String nPoints(int n) {
