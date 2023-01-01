@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -32,12 +33,8 @@ public class WordleSolver {
     }
 
     public boolean checkWordValidity(String word, boolean enhanced) {
-        if (word.length() != 5) {
-            return false;
-        } else if (enhanced) {
-            return word.matches("^[a-z][a-z][a-z][a-z][a-z]$") && dictionary.contains(word);
-        }
-        return word.matches("^[a-z][a-z][a-z][a-z][a-z]$");
+        boolean patternMatch = word.matches("^[a-z][a-z][a-z][a-z][a-z]$");
+        return enhanced ? patternMatch && dictionary.contains(word) : patternMatch;
     }
 
     public boolean checkCodeValidity(String code) {
@@ -45,11 +42,7 @@ public class WordleSolver {
     }
 
     public int[] codify(String code) {
-        int[] output = new int[]{0, 0, 0, 0, 0};
-        for (int i = 0; i < 5; i++) {
-            output[i] = (int) code.charAt(i) - '0';
-        }
-        return output;
+        return Arrays.stream(code.split("")).mapToInt(c -> (int) c.charAt(0) - '0').toArray();
     }
 
     public boolean applyRules(String word, int[] code) {
@@ -132,6 +125,7 @@ public class WordleSolver {
                 count += 1;
             }
         }
+        //int count2 = (int) Arrays.stream(word.split("")).map(s -> s.charAt(0) == character && code[0] > 0).count();
         return count;
     }
 
