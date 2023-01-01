@@ -41,18 +41,6 @@ public class WordleSolver {
     }
 
     public boolean checkCodeValidity(String code) {
-        /*int n;
-        if (code.length() != 5) {
-            return false;
-        } else {
-            for (int i = 0; i < 5; i++) {
-                n = (int) code.charAt(i) - '0';
-                if (n < 0 || n > 2) {
-                    return false;
-                }
-            }
-        }
-        return true;*/
         return code.matches("^[0-2][0-2][0-2][0-2][0-2]$");
     }
 
@@ -70,32 +58,71 @@ public class WordleSolver {
         System.out.println("Starting now: " + f);
         for (int i = 0; i < 5; i++) {
             char character = word.charAt(i);
+            int numberOfLetters = 0;
             switch (code[i]) {
                 case 0:
-                    f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
-                    this.dictionary = applyFilter(this.dictionary, f);
-                    int numberOfLetters = howManyLetters(word, character, code);
+                    /*f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
+                    this.dictionary = applyFilter(f);
+                    numberOfLetters = howManyLetters(word, character, code);
                     if (numberOfLetters == 0) {
                         f = String.format("^[^%c][^%c][^%c][^%c][^%c]$", character, character, character, character, character);
-                        this.dictionary = applyFilter(this.dictionary, f);
+                        this.dictionary = applyFilter(f);
                     } else {
                         f = filterThisManyLetters(character, numberOfLetters);
-                        this.dictionary = applyFilter(this.dictionary, f);
-                    }
+                        this.dictionary = applyFilter(f);
+                    }*/
+                    greyCase(word, character, i, code);
                     break;
                 case 1:
-                    f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
-                    this.dictionary = applyFilter(this.dictionary, f);
+                    /*f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
+                    this.dictionary = applyFilter(f);
                     f = String.format("^.*[%c].*$", character);
-                    this.dictionary = applyFilter(this.dictionary, f);
+                    this.dictionary = applyFilter(f);
+                    numberOfLetters = howManyLetters(word, character, code);
+                    if (numberOfLetters > 1) {
+                        f = String.format("^.*[%c].*[%c].*$", character, character);
+                        this.dictionary = applyFilter(f);
+                    }*/
+                    yellowCase(word, character, i, code);
                     break;
                 case 2:
-                    f = String.format("^%s[%c]%s$", nPoints(i), character, nPoints(4 - i));
-                    this.dictionary = applyFilter(this.dictionary, f);
+                    /*f = String.format("^%s[%c]%s$", nPoints(i), character, nPoints(4 - i));
+                    this.dictionary = applyFilter(f);*/
+                    greenCase(character, i);
                     break;
             }
         }
         return this.dictionary.size() < previousDictionarySize;
+    }
+
+    public void greyCase(String word, char character, int i, int[] code) {
+        int numberOfLetters = howManyLetters(word, character, code);
+        String f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
+        this.dictionary = applyFilter(f);
+        if (numberOfLetters == 0) {
+            f = String.format("^[^%c][^%c][^%c][^%c][^%c]$", character, character, character, character, character);
+            this.dictionary = applyFilter(f);
+        } else {
+            f = filterThisManyLetters(character, numberOfLetters);
+            this.dictionary = applyFilter(f);
+        }
+    }
+
+    public void yellowCase(String word, char character, int i, int[] code) {
+        int numberOfLetters = howManyLetters(word, character, code);
+        String f = String.format("^%s[^%c]%s$", nPoints(i), character, nPoints(4 - i));
+        this.dictionary = applyFilter(f);
+        f = String.format("^.*[%c].*$", character);
+        this.dictionary = applyFilter(f);
+        if (numberOfLetters > 1) {
+            f = String.format("^.*[%c].*[%c].*$", character, character);
+            this.dictionary = applyFilter(f);
+        }
+    }
+
+    public void greenCase(char character, int i) {
+        String f = String.format("^%s[%c]%s$", nPoints(i), character, nPoints(4 - i));
+        this.dictionary = applyFilter(f);
     }
 
     public int howManyLetters(String word, char character, int[] code) {
@@ -124,9 +151,9 @@ public class WordleSolver {
         return s;
     }
 
-    public List<String> applyFilter(List<String> list, String filter) {
+    public List<String> applyFilter(String filter) {
         System.out.println("Regex for the filter: " + filter);
-        return list.stream().filter(w -> w.matches(filter)).collect(Collectors.toList());
+        return this.dictionary.stream().filter(w -> w.matches(filter)).collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
